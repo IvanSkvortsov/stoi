@@ -1,7 +1,7 @@
 #ifndef __STOI_H__
 #define __STOI_H__
 #include<string>
-#include<string.h>
+//#include<cstring>
 
 #define c_0 48
 #define c_9 57
@@ -22,7 +22,10 @@ int stoi(char const * s, int size, int base = 10)
 {
 	int value = 0;
 	for(int i = 0; i < size; ++i)
-		value = value * base + ctoi( s[i] );
+	{
+		value *= base;
+		value += ctoi( s[i] );
+	}
 	return value;
 }
 
@@ -40,13 +43,23 @@ int stoi(std::string const & s, int base = 10)
 //---------- parse 16 ----------//
 int parse_16( std::string const & s, int & pos, int & len)
 {
-	pos = 0; len = 0;
+	if( s.size() > 2 )
+	{
+		if( s[0] == '0' && s[1] == 'x' );
+		pos = 2; len = 2;
+	}
+	else
+	{
+		pos = 0;
+		len = 0;
+	}
+	int v = 0;
 	for(; len < s.size(); ++len)
-		if( !isdigit( s[len] ) )
-			if(s[len] == 'x' && len > 0 && s[len-1] == '0')
-				if( pos == 0 )pos = len+1;
-				else return 1;
-			else break;
+	{
+		v = ctoi( s[len] );
+		if( v < 0 || v > 0xf )
+			break;
+	}
 	len -= pos;
 	return 0;
 }
@@ -55,9 +68,13 @@ int parse_16( std::string const & s, int & pos, int & len)
 int parse_base(std::string const & s, int & pos, int & len, int base = 10 )
 {
 	pos = 0; len = 0;
+	int v = 0;
 	for(; len < s.size(); ++len)
-		if( !isdigit( s[len] ) )
+	{
+		v = ctoi( s[len] );
+		if( v < 0 || v >= base )
 			break;
+	}
 	return 0;
 }
 
